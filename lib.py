@@ -1,3 +1,4 @@
+import os
 import requests
 import zipfile
 from pathlib import Path
@@ -19,3 +20,17 @@ def data_is_downloaded():
         f.stat().st_size for f in root_directory.glob('**/*') if f.is_file())
 
     return data_dir_size >= 26000000   # approximate size of directory
+
+
+def loop_on_files(filter="all"):
+    with os.scandir("./data") as data:
+        for item in data:
+            if item.name.endswith(".txt") and item.is_file():
+                with open(item.path, "r") as year_file:
+                    read_content = year_file.read()
+                yield item.name, item.name.strip("yob.txt"), read_content
+
+
+if __name__ == "__main__":
+    for file_name, year, content in loop_on_files():
+        print(file_name, year, content)
